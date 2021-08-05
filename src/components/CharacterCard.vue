@@ -2,10 +2,17 @@
   <div class="character-card">
     <h1 class="character-card-title">{{ this.character.name }}</h1>
     <div class="character-card-container">
-      <div class="character-card-img">
+      <div class="character-card-img-container">
+        <button
+          class="character-card-btn"
+          @click="handleFavorite"
+        >
+          {{ this.isFavorite ? 'Drop' : 'Add'}} favorites
+        </button>
         <img
           :src="`${this.character.thumbnail.path}.${this.character.thumbnail.extension}`"
           :alt="`${this.character.name} profile image`"
+          class="character-card-img"
         />
       </div>
       <div v-if="this.character.description !== ''" class="character-card-bio">
@@ -22,6 +29,20 @@ export default {
   props: {
     character: Object,
   },
+  computed: {
+    isFavorite() {
+      return !!this.$store.state.favorites.find((x) => x.id === this.character.id);
+    },
+  },
+  methods: {
+    handleFavorite() {
+      if (this.isFavorite) {
+        this.$store.dispatch('removeFavorite', this.character.id);
+      } else {
+        this.$store.dispatch('addFavorite', this.character);
+      }
+    },
+  },
 };
 </script>
 
@@ -34,12 +55,21 @@ export default {
   display: flex;
 }
 
-.character-card-img {
+.character-card-btn {
+  margin-bottom: 15px;
+}
+
+.character-card-img-container {
   max-width: calc(33%);
   padding-right: 20px;
 }
 
-.character-card-img img {
+.character-card-bio {
+  padding-top: 35px;
+}
+
+.character-card-img {
+  min-width: 200px;
   width: 100%;
   height: auto;
 }

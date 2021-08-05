@@ -3,6 +3,7 @@
     <div class="sidebar">
       <search-input :handleSearch="this.handleSearch" />
       <randomizer :getRandomHero="getRandomHero" />
+      <favorites-list></favorites-list>
     </div>
     <div class="results">
       <div v-if="isLoading">

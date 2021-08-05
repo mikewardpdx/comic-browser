@@ -16,5 +16,6 @@ export default {
 <style>
 .randomizer {
   padding-top: 30px;
+  margin-bottom: 30px;
 }
 </style>
