@@ -1,6 +1,12 @@
 <template>
   <div id="app">
-    <div>{{ name }}</div>
+    <div v-if="isLoading">
+      <h1>Loading...</h1>
+    </div>
+    <div v-else-if="hasError">
+      <h1>Something has gone wrong...</h1>
+    </div>
+    <div v-else>{{ name }}</div>
   </div>
 </template>
 
@@ -13,15 +19,33 @@ export default {
     return {
       name: 'yo',
       isLoading: false,
+      hasError: false,
     };
   },
   created() {
-    const signature = md5(`${'1'}${process.env.VUE_APP_MARVEL_PRIVATE_KEY}${process.env.VUE_APP_MARVEL_PUBLIC_KEY}`);
-    const route = `http://gateway.marvel.com/v1/public/comics?ts=1&apikey=${process.env.VUE_APP_MARVEL_PUBLIC_KEY}&hash=${signature}`;
-    axios.get(route).then((res) => {
-      const { data } = res;
-      console.log(data);
-    });
+    this.fetchSuperheroes();
+  },
+  methods: {
+    fetchSuperheroes() {
+      this.isLoading = true;
+      this.hasError = false;
+      const signature = md5(
+        `1${process.env.VUE_APP_MARVEL_PRIVATE_KEY}${process.env.VUE_APP_MARVEL_PUBLIC_KEY}`,
+      );
+      const route = `http://gateway.marvel.com/v1/public/comics?ts=1&apikey=${process.env.VUE_APP_MARVEL_PUBLIC_KEY}&hash=${signature}`;
+
+      axios
+        .get(route)
+        .then((res) => {
+          this.isLoading = false;
+          const { data } = res;
+          console.log(data);
+        })
+        .catch(() => {
+          this.isLoading = false;
+          this.hasError = true;
+        });
+    },
   },
 };
 </script>
