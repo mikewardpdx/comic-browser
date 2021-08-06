@@ -52,7 +52,7 @@ export default {
       const signature = md5(
         `1${process.env.VUE_APP_MARVEL_PRIVATE_KEY}${process.env.VUE_APP_MARVEL_PUBLIC_KEY}`,
       );
-      const route = 'http://gateway.marvel.com/v1/public/characters';
+      const route = 'https://gateway.marvel.com/v1/public/characters';
 
       axios
         .get(route, {
