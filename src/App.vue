@@ -3,7 +3,7 @@
     <div class="sidebar">
       <search-input :handleSearch="this.handleSearch" />
       <randomizer :getRandomHero="getRandomHero" />
-      <favorites-list></favorites-list>
+      <favorites-list :setActiveHero="setActiveHero"></favorites-list>
     </div>
     <div class="results">
       <div v-if="isLoading">
@@ -13,7 +13,7 @@
         <h1>Something has gone wrong...</h1>
       </div>
       <div v-if="hasResult">
-        <character-card :character="this.results[0]" />
+        <character-card :character="this.result" />
       </div>
       <div v-if="!hasError && !isLoading && hasSearched && !hasResult">
         <h1>Sorry, no results for: {{ this.searchTerm }}</h1>
@@ -39,7 +39,7 @@ export default {
       hasError: false,
       hasResult: false,
       hasSearched: false,
-      results: [],
+      result: null,
     };
   },
   methods: {
@@ -73,9 +73,9 @@ export default {
           this.hasResult = results.length > 0;
 
           if (shouldRandomize) {
-            this.results = [results[this.getRandomInt(results.length - 1)]];
+            this.result = results[this.getRandomInt(results.length - 1)];
           } else {
-            this.results = results;
+            this.result = results[0]; // eslint-disable-line prefer-destructuring
           }
         })
         .catch(() => {
@@ -94,6 +94,11 @@ export default {
     getRandomHero() {
       const randoChar = alphaString.charAt(this.getRandomInt(alphaString.length - 1));
       this.fetchSuperheroes({ nameStartsWith: randoChar }, true);
+    },
+    setActiveHero(hero) {
+      this.$nextTick(() => {
+        this.result = hero;
+      });
     },
   },
 };

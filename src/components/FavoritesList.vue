@@ -8,7 +8,12 @@
           :key="`fav-${i}`"
           class="favorites-list-item"
         >
-          {{ fav.name }}
+          <a
+            href="#"
+            @click.prevent="updateHero(fav)"
+          >
+            {{ fav.name }}
+          </a>
           <button @click="removeFavorite(fav.id)">drop</button>
         </li>
       </ul>
@@ -20,6 +25,9 @@
 <script>
 export default {
   name: 'favorites-list',
+  props: {
+    setActiveHero: Function,
+  },
   computed: {
     favorites() {
       return this.$store.state.favorites;
@@ -28,6 +36,9 @@ export default {
   methods: {
     removeFavorite(id) {
       this.$store.dispatch('removeFavorite', id);
+    },
+    updateHero(fav) {
+      this.setActiveHero(fav);
     },
   },
 };
