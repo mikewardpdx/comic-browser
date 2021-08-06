@@ -9,16 +9,16 @@
       <div v-if="isLoading">
         <h1>Loading...</h1>
       </div>
-      <div v-else-if="hasError">
+      <div v-if="hasError">
         <h1>Something has gone wrong...</h1>
       </div>
-      <div v-else-if="(hasResult && results.length <= 0)">
-        <h1>Sorry, no results for: {{ this.searchTerm }}</h1>
-      </div>
-      <div v-else-if="hasResult">
+      <div v-if="hasResult">
         <character-card :character="this.results[0]" />
       </div>
-      <div v-else>
+      <div v-if="!hasError && !isLoading && hasSearched && !hasResult">
+        <h1>Sorry, no results for: {{ this.searchTerm }}</h1>
+      </div>
+      <div v-if="!hasSearched">
         <h1>Search for a character or try your luck the randomizer</h1>
       </div>
     </div>
@@ -29,7 +29,7 @@
 import axios from 'axios';
 import md5 from './utils/md5';
 
-const alphaNumeric = '0123456789abcdefghijklmnopqrstuvwxyz';
+const alphaString = 'abcdefghijklmnopqrstuvwxyz';
 
 export default {
   data() {
@@ -38,12 +38,14 @@ export default {
       isLoading: false,
       hasError: false,
       hasResult: false,
+      hasSearched: false,
       results: [],
     };
   },
   methods: {
     fetchSuperheroes(apiParams, shouldRandomize) {
       this.isLoading = true;
+      this.hasSearched = true;
       this.hasError = false;
       this.hasResult = false;
 
@@ -62,13 +64,13 @@ export default {
           },
         })
         .then((res) => {
-          this.isLoading = false;
-          this.hasResult = true;
           const {
             data: {
               data: { results },
             },
           } = res;
+          this.isLoading = false;
+          this.hasResult = results.length > 0;
 
           if (shouldRandomize) {
             this.results = [results[this.getRandomInt(results.length - 1)]];
@@ -90,7 +92,7 @@ export default {
       this.fetchSuperheroes({ name: val }, false);
     },
     getRandomHero() {
-      const randoChar = alphaNumeric.charAt(this.getRandomInt(alphaNumeric.length - 1));
+      const randoChar = alphaString.charAt(this.getRandomInt(alphaString.length - 1));
       this.fetchSuperheroes({ nameStartsWith: randoChar }, true);
     },
   },
